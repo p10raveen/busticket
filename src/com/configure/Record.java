@@ -7,6 +7,7 @@ package com.configure;
 
 import java.sql.*;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 /**
  *
@@ -122,6 +123,79 @@ public class Record {
             e.printStackTrace();
         }
         return i;
+    }
+     public static ArrayList<String> getAllDetails(int pnr)
+    {  
+        ArrayList<String> a = new ArrayList<String>();
+        try
+        {
+            Connection con = Record.takeConnection();
+            String query= "SELECT passenger.`*`,bus_details.bus_no FROM passenger,bus_details WHERE passenger.pnr_no=? AND  passenger.bus_id = bus_details.bus_id;";
+            PreparedStatement ps = con.prepareStatement(query);
+            ps.setInt(1, pnr);
+            ResultSet rs = ps.executeQuery();
+            if(rs.next())
+            {
+                a.add(rs.getString(1));
+                a.add(rs.getString(2));
+                a.add(rs.getString(3));
+                a.add(rs.getString(4));
+                a.add(rs.getString(5));
+                a.add(rs.getString(6));
+                a.add(rs.getString(7));
+                a.add(rs.getString(8));
+                a.add(rs.getString(9));
+                a.add(rs.getString(10));
+            }
+            con.close();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        return a;
+    }
+    
+     public static void setPhoto(String path, int pnr_no)
+    {
+        try
+        {
+            Connection con = Record.takeConnection();
+            String query= "update passenger set photo=? where pnr_no=?";
+            PreparedStatement ps = con.prepareStatement(query);
+            ps.setString(1, path);
+            ps.setInt(2, pnr_no);
+            
+            ps.executeUpdate();
+            con.close();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+     
+     public static int getPnr()
+    {
+        int pnr = 0;
+        try
+        {
+            Connection con = Record.takeConnection();
+            String query= "select pnr_no from passenger order by pnr_no desc";
+            PreparedStatement ps = con.prepareStatement(query);
+            ResultSet rs = ps.executeQuery(query);
+            if(rs.next())
+            {
+                pnr = rs.getInt(1);
+            }
+            ps.executeUpdate();
+            con.close();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        return pnr;
     }
     
     public static String getCurrentDate()
